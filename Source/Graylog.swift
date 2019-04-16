@@ -246,14 +246,23 @@ public class Graylog {
 
             URLSession.shared.dataTask(with: urlRequest) {data, response, error in
                 do {
+                    print("postLogRequest received response: \(response)")
+                    print("postLogRequest response: \((response as? HTTPURLResponse))")
+                    if let error = error {
+                        print("postLogRequest Error! We are unable to make a request to Graylog: \(error.localizedDescription)")
+                    } else {
+                        print("postLogRequest no network errors")
+                    }
+
                     try Networking.validate(data, response, error)
                     completion(true)
                 } catch {
-                    print("Error! We are unable to send log to Graylog: \(error.localizedDescription)")
+                    print("Error! We are unable to validate network response from Graylog: \(error.localizedDescription)")
                     completion(false)
                 }
                 }.resume()
         } catch {
+            print("postLogRequest exception: \(error.localizedDescription)")
             completion(false)
         }
     }
